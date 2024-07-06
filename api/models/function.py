@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, JSON
 
-from . import Base
+from api.models import Base
+from api.models.types import EncryptedJSON
 
 
 class FunctionModel(Base):
@@ -8,4 +9,4 @@ class FunctionModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    specification = Column(JSON)
+    specification = Column(EncryptedJSON, nullable=False)

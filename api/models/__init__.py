@@ -10,6 +10,8 @@ Base = declarative_base()
 
 from api.models.function import FunctionModel
 from api.models.user import UserModel
+from api.models.credential_type import CredentialTypeModel
+from api.models.credential import CredentialModel
 
 Base.metadata.create_all(bind=engine)
 

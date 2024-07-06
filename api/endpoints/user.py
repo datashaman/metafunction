@@ -2,14 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from api.models import get_db, Session, UserModel
-from api.schemas.user import User
+from api.schemas.user import UserCreate, User
 from api.security.oauth2 import get_admin_user
 
 router = APIRouter()
 
 
 @router.post("/", response_model=User, response_model_exclude={"password"})
-async def create_user(user: User, db: Session = Depends(get_db), current_user: User = Depends(get_admin_user)):
+async def create_user(user: UserCreate, db: Session = Depends(get_db), current_user: User = Depends(get_admin_user)):
     db_user = UserModel(**user.dict())
     db.add(db_user)
     db.commit()
