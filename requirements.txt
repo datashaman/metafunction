@@ -1,5 +1,8 @@
+cryptography
+PyJWT
 fastapi
 pydantic
-uvicorn
+python-decouple
 sqlalchemy
-PyJWT
+typer
+uvicorn

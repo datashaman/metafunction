@@ -2,19 +2,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./test.db"
+from api.settings import SQLALCHEMY_DATABASE_URL
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-import .spec
-import .user
+from api.models.function import FunctionModel
+from api.models.user import UserModel
 
 Base.metadata.create_all(bind=engine)
 
 def get_db():
-    db = SessionLocal()
+    db = Session()
     try:
         yield db
     finally:
