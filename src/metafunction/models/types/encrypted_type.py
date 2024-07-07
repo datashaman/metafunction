@@ -1,4 +1,4 @@
-from sqlalchmey.engine import Dialect
+from sqlalchemy.engine import Dialect
 from sqlalchemy.types import TypeDecorator, String
 from typing import Any, Optional
 from cryptography.fernet import Fernet
