@@ -11,9 +11,10 @@ router = APIRouter()
 
 @router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
-    user = select(User).where(User.email == form_data.username).first()
+    statement = select(User).where(User.email == form_data.username)
+    user = session.exec(statement).first()
 
-    if not (user and user.verify_password(form_data.password)):
+    if not (user and user.password == form_data.password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
     access_token = create_access_token(data={"sub": user.email})

@@ -11,6 +11,3 @@ class User(SQLModel, table=True):
     email: str
     password: str = Field(sa_column=Column(EncryptedType))
     is_admin: bool
-
-    def verify_password(self, password: str) -> bool:
-        return self.password == password

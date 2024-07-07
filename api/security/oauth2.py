@@ -5,7 +5,7 @@ import jwt
 from datetime import datetime, timedelta
 from typing import Optional
 
-from api.models import get_session, Session, User
+from api.models import get_session, Session, select, User
 from api.settings import SECRET_KEY
 
 
@@ -40,7 +40,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), session: Session
     except jwt.PyJWTError:
         raise credentials_exception
 
-    return session.query(User).filter(User.email == email).first()
+    statement = select(User).where(User.email == email)
+
+    return session.exec(statement).first()
 
 
 async def get_admin_user(current_user: User = Depends(get_current_user)):
