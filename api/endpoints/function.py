@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
@@ -17,8 +16,11 @@ async def create_function(function: Function, session: Session = Depends(get_ses
 
 
 @router.get("/", response_model=List[Function])
-async def read_functions(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
-    return session.exec(select(Function).offset(skip).limit(limit)).all()
+async def read_functions(
+    offset: int = 0, limit: int = 10, session: Session = Depends(get_session)
+):
+    statement = select(Function).offset(offset).limit(limit)
+    return session.exec(statement).all()
 
 
 @router.get("/{function_id}", response_model=Function)
