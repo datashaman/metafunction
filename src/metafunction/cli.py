@@ -1,7 +1,14 @@
 import typer
 from cryptography.fernet import Fernet
 
-from api.models import get_session, Session, CredentialType, User
+from metafunction.models import (
+    create_tables,
+    get_session,
+    Session,
+    CredentialType,
+    User,
+)
+
 
 app = typer.Typer()
 
@@ -36,4 +43,5 @@ def seed_data():
 
 
 if __name__ == "__main__":
+    create_tables()
     app()

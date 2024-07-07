@@ -1,8 +1,0 @@
-cryptography
-PyJWT
-fastapi
-pydantic
-python-decouple
-sqlmodel
-typer
-uvicorn

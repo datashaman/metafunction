@@ -1,8 +1,10 @@
+from typing import Dict
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from api.models import get_session, Session, select, User
-from api.security.oauth2 import create_access_token
+from metafunction.models import get_session, Session, select, User
+from metafunction.security.oauth2 import create_access_token
 
 
 router = APIRouter()
@@ -12,7 +14,7 @@ router = APIRouter()
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session),
-):
+) -> Dict[str, str]:
     statement = select(User).where(User.email == form_data.username)
     user = session.exec(statement).first()
 

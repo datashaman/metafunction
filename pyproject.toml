@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "metafunction"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "datashaman", email = "marlinf@datashaman.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "cryptography",
+    "PyJWT",
+    "fastapi",
+    "pydantic",
+    "python-decouple",
+    "sqlmodel",
+    "typer",
+    "uvicorn",
+]
+
+[project.urls]
+Documentation = "https://github.com/datashaman/metafunction#readme"
+Issues = "https://github.com/datashaman/metafunction/issues"
+Source = "https://github.com/datashaman/metafunction"
+
+[tool.hatch.version]
+path = "src/metafunction/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/metafunction tests}"
+
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.coverage.run]
+source_pkgs = ["metafunction", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/metafunction/__about__.py",
+]
+
+[tool.coverage.paths]
+metafunction = ["src/metafunction", "*/metafunction/src/metafunction"]
+tests = ["tests", "*/metafunction/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+plugins = [
+    "pydantic.mypy",
+]
+
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+
+# for strict mypy: (this is the tricky one :-))
+disallow_untyped_defs = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true

@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List
+from typing import List, Sequence
 
-from api.models import get_session, Session, select, Function
+from metafunction.models import get_session, Session, select, Function
 
 
 router = APIRouter()
 
 
 @router.post("/", response_model=Function)
-async def create_function(function: Function, session: Session = Depends(get_session)):
+async def create_function(
+    function: Function, session: Session = Depends(get_session)
+) -> Function:
     session.add(function)
     session.commit()
     session.refresh(function)
@@ -18,13 +20,15 @@ async def create_function(function: Function, session: Session = Depends(get_ses
 @router.get("/", response_model=List[Function])
 async def read_functions(
     offset: int = 0, limit: int = 10, session: Session = Depends(get_session)
-):
+) -> Sequence[Function]:
     statement = select(Function).offset(offset).limit(limit)
     return session.exec(statement).all()
 
 
 @router.get("/{function_id}", response_model=Function)
-async def read_function(function_id: int, session: Session = Depends(get_session)):
+async def read_function(
+    function_id: int, session: Session = Depends(get_session)
+) -> Function:
     function = session.get(Function, function_id)
     if function is None:
         raise HTTPException(status_code=404, detail="Function not found")

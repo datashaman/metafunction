@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List
-from api.models import get_session, Session, select, User
-from api.security.oauth2 import get_admin_user
+from typing import List, Sequence
+
+from metafunction.models import get_session, Session, select, User
+from metafunction.security.oauth2 import get_admin_user
+
 
 router = APIRouter()
 
 
 @router.get("/me", response_model=User, response_model_exclude={"password"})
-async def me(current_user: User = Depends(get_admin_user)):
+async def me(current_user: User = Depends(get_admin_user)) -> User:
     return current_user
 
 
@@ -16,7 +18,7 @@ async def get_user(
     user_id: int,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-):
+) -> User:
     user = session.get(User, user_id)
     if user:
         return user
@@ -29,7 +31,7 @@ async def get_users(
     limit: int = 10,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-):
+) -> Sequence[User]:
     statement = select(User).offset(offset).limit(limit)
     return session.exec(statement).all()
 
@@ -39,7 +41,7 @@ async def create_user(
     user: User,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-):
+) -> User:
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -49,13 +51,13 @@ async def create_user(
 @router.put("/{user_id}", response_model=User, response_model_exclude={"password"})
 async def update_user(
     user_id: int,
-    user: User,
+    updates: User,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-):
+) -> User:
     user = session.get(User, user_id)
     if user:
-        user.update(user)
+        user.update(updates)
         session.commit()
         session.refresh(user)
         return user
@@ -67,7 +69,7 @@ async def delete_user(
     user_id: int,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-):
+) -> dict:
     user = session.get(User, user_id)
     if user:
         session.delete(user)
