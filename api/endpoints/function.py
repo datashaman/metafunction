@@ -1,28 +1,29 @@
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from typing import List
-from api.schemas.function import Function
-from api.models import get_db, FunctionModel
+
+from api.models import get_session, Session, select, Function
+
 
 router = APIRouter()
 
+
 @router.post("/", response_model=Function)
-async def create_function(function: Function, db: Session = Depends(get_db)):
-    db_function = FunctionModel(name=function.name, specification=function.specification)
-    db.add(db_function)
-    db.commit()
-    db.refresh(db_function)
-    return db_function
+async def create_function(function: Function, session: Session = Depends(get_session)):
+    session.add(function)
+    session.commit()
+    session.refresh(function)
+    return function
+
 
 @router.get("/", response_model=List[Function])
-async def read_functions(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    functions = db.query(FunctionModel).offset(skip).limit(limit).all()
-    return functions
+async def read_functions(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+    return session.exec(select(Function).offset(skip).limit(limit)).all()
+
 
 @router.get("/{function_id}", response_model=Function)
-async def read_function(function_id: int, db: Session = Depends(get_db)):
-    function = db.query(FunctionModel).filter(FunctionModel.id == function_id).first()
+async def read_function(function_id: int, session: Session = Depends(get_session)):
+    function = session.get(Function, function_id)
     if function is None:
         raise HTTPException(status_code=404, detail="Function not found")
     return function

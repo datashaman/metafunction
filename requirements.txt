@@ -3,6 +3,6 @@ PyJWT
 fastapi
 pydantic
 python-decouple
-sqlalchemy
+sqlmodel
 typer
 uvicorn

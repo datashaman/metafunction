@@ -1,17 +1,16 @@
-from sqlalchemy import Boolean, Column, Integer, String, JSON
+from typing import Optional
+from sqlalchemy import Column
+from sqlmodel import SQLModel, Field
 
-from api.models import Base
 from api.models.types import EncryptedType
 
 
-class UserModel(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, nullable=False)
-    email = Column(String, index=True, nullable=False, unique=True)
-    password = Column(EncryptedType, nullable=False)
-    is_admin = Column(Boolean, default=False, nullable=False)
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    email: str
+    password: str = Field(sa_column=Column(EncryptedType))
+    is_admin: bool
 
     def verify_password(self, password: str) -> bool:
         return self.password == password

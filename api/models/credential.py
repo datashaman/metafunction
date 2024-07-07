@@ -1,13 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from typing import Optional
+from sqlalchemy import Column
+from sqlmodel import SQLModel, Field, Relationship
 
-from api.models import Base
+from api.models import CredentialType
 from api.models.types import EncryptedJSON
 
 
-class CredentialModel(Base):
-    __tablename__ = "credentials"
-    id = Column(Integer, primary_key=True, index=True)
-    type_id = Column(Integer, ForeignKey('credential_types.id'))
-    type = relationship("CredentialTypeModel")
-    data = Column(EncryptedJSON, nullable=False)
+class Credential(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    credential_type_id: int | None = Field(default=None, foreign_key="credentialtype.id")
+    credential_type: CredentialType = Relationship(back_populates="credentials")
+    data: dict = Field(default={}, sa_column=Column(EncryptedJSON))

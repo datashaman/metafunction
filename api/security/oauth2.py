@@ -5,7 +5,7 @@ import jwt
 from datetime import datetime, timedelta
 from typing import Optional
 
-from api.models import get_db, Session, UserModel
+from api.models import get_session, Session, User
 from api.settings import SECRET_KEY
 
 
@@ -13,6 +13,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -25,7 +26,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
@@ -39,10 +40,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     except jwt.PyJWTError:
         raise credentials_exception
 
-    return db.query(UserModel).filter(UserModel.email == email).first()
+    return session.query(User).filter(User.email == email).first()
 
 
-async def get_admin_user(current_user: UserModel = Depends(get_current_user)):
+async def get_admin_user(current_user: User = Depends(get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="You are not an admin")
     return current_user

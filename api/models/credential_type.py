@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String
+from typing import Optional
 
-from api.models import Base
+from sqlmodel import SQLModel, Field, Relationship
 
+class CredentialType(SQLModel, table=True):
+    id : Optional[int] = Field(default=None, primary_key=True)
+    name : str
 
-class CredentialTypeModel(Base):
-    __tablename__ = "credential_types"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    credentials: list["Credential"] = Relationship(back_populates="credential_type")
