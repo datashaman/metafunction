@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field, Relationship
 
@@ -6,10 +6,30 @@ from metafunction.models import CredentialType
 from metafunction.models.types import EncryptedJSON
 
 
-class Credential(SQLModel, table=True):
+class CredentialBase(SQLModel):
+    credential_type_id: Optional[int]
+    data: Dict[str, Any]
+
+
+class Credential(CredentialBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    credential_type_id: int | None = Field(
+    credential_type_id: Optional[int] = Field(
         default=None, foreign_key="credentialtype.id"
     )
     credential_type: CredentialType = Relationship(back_populates="credentials")
-    data: dict = Field(default={}, sa_column=Column(EncryptedJSON))
+    data: Dict[str, Any] = Field(default={}, sa_column=Column(EncryptedJSON))
+
+
+class CredentialCreate(CredentialBase):
+    pass
+
+
+class CredentialUpdate(CredentialBase):
+    pass
+
+
+class CredentialPublic(CredentialBase):
+    id: int
+
+    class Config:
+        from_attributes = True

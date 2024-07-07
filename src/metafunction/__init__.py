@@ -1,14 +1,21 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-from metafunction.endpoints import user, auth
+from metafunction.endpoints import auth, credentials, functions, users
 from metafunction.models import create_tables
 
-app = FastAPI()
 
-app.include_router(user.router, prefix="/users", tags=["users"])
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(credentials.router, prefix="/credentials", tags=["credentials"])
+app.include_router(functions.router, prefix="/functions", tags=["functions"])
+app.include_router(users.router, prefix="/users", tags=["users"])

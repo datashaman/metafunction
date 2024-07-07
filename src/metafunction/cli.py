@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 from metafunction.models import (
     create_tables,
     get_session,
+    select,
     Session,
     CredentialType,
     User,
@@ -14,7 +15,7 @@ app = typer.Typer()
 
 
 @app.command()
-def create_user(name: str, email: str, password: str, is_admin: bool = False):
+def create_user(name: str, email: str, password: str, is_admin: bool = False) -> None:
     session = next(get_session())
     user = User(name=name, email=email, password=password, is_admin=is_admin)
     session.add(user)
@@ -23,13 +24,22 @@ def create_user(name: str, email: str, password: str, is_admin: bool = False):
 
 
 @app.command()
-def generate_key():
+def list_users() -> None:
+    session = next(get_session())
+    statement = select(User).order_by(User.name)
+    users = session.exec(statement).all()
+    for user in users:
+        typer.echo(f"{user.name} - {user.email}")
+
+
+@app.command()
+def generate_key() -> None:
     key = Fernet.generate_key()
     typer.echo(key.decode())
 
 
 @app.command()
-def seed_data():
+def seed_data() -> None:
     session = next(get_session())
 
     credential_types = [

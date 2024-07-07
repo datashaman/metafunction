@@ -7,7 +7,7 @@ import base64
 from metafunction.security import crypt
 
 
-class EncryptedType(TypeDecorator):
+class EncryptedType(TypeDecorator[Optional[str]]):
     impl = String
 
     def process_bind_param(

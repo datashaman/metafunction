@@ -11,7 +11,7 @@ from sqlalchemy.types import TypeDecorator, String
 from metafunction.security import crypt
 
 
-class EncryptedJSON(TypeDecorator):
+class EncryptedJSON(TypeDecorator[Optional[MutableDict[str, Any]]]):
     impl = String
 
     def process_bind_param(self, value: Any, dialect: Dialect) -> Optional[str]:
@@ -19,14 +19,16 @@ class EncryptedJSON(TypeDecorator):
             value_str = json.dumps(value)
             encrypted_value = crypt.encrypt(value_str.encode("utf-8"))
             return base64.b64encode(encrypted_value).decode("utf-8")
-        return value
+        return None
 
-    def process_result_value(self, value: Optional[str], dialect: Dialect) -> Any:
+    def process_result_value(
+        self, value: Optional[str], dialect: Dialect
+    ) -> Optional[MutableDict[str, Any]]:
         if value is not None:
             encrypted_value = base64.b64decode(value.encode("utf-8"))
             decrypted_value = crypt.decrypt(encrypted_value).decode("utf-8")
-            return json.loads(decrypted_value)
-        return value
+            return MutableDict(**json.loads(decrypted_value))
+        return None
 
-    def copy_value(self, value: Any) -> Optional[MutableDict]:
+    def copy_value(self, value: Any) -> Optional[MutableDict[str, Any]]:
         return MutableDict.coerce(value, self.impl)

@@ -3,11 +3,16 @@ from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from metafunction.models import get_session, Session, select, User
-from metafunction.security.oauth2 import create_access_token
+from metafunction.models import get_session, Session, select, User, UserPublic
+from metafunction.security.oauth2 import create_access_token, get_current_user
 
 
 router = APIRouter()
+
+
+@router.get("/me", response_model=User, response_model_exclude={"password"})
+async def me(current_user: User = Depends(get_current_user)) -> UserPublic:
+    return UserPublic.from_orm(current_user)
 
 
 @router.post("/token")
