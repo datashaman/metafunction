@@ -20,7 +20,8 @@ async def list_credentials(
 ) -> List[CredentialPublic]:
     statement = select(Credential).offset(offset).limit(limit)
     return [
-        CredentialPublic.from_orm(credential) for credential in session.exec(statement)
+        CredentialPublic.model_validate(credential)
+        for credential in session.exec(statement)
     ]
 
 
@@ -31,7 +32,7 @@ async def read_credential(
     credential = session.get(Credential, credential_id)
     if credential is None:
         raise HTTPException(status_code=404, detail="Credential not found")
-    return CredentialPublic.from_orm(credential)
+    return CredentialPublic.model_validate(credential)
 
 
 @router.post("/", response_model=Credential)
@@ -42,7 +43,7 @@ async def create_credential(
     session.add(credential)
     session.commit()
     session.refresh(credential)
-    return CredentialPublic.from_orm(credential)
+    return CredentialPublic.model_validate(credential)
 
 
 @router.delete("/{credential_id}", response_model=CredentialPublic)
@@ -54,4 +55,4 @@ async def delete_credential(
         raise HTTPException(status_code=404, detail="Credential not found")
     session.delete(credential)
     session.commit()
-    return CredentialPublic.from_orm(credential)
+    return CredentialPublic.model_validate(credential)

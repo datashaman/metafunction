@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Sequence, Dict
+from typing import List, Dict
 
 from metafunction.models import (
     get_session,
@@ -16,9 +16,7 @@ from metafunction.security.oauth2 import get_admin_user
 router = APIRouter()
 
 
-@router.get(
-    "/{user_id}", response_model=UserPublic, response_model_exclude={"password"}
-)
+@router.get("/{user_id}", response_model=UserPublic)
 async def get_user(
     user_id: int,
     session: Session = Depends(get_session),
@@ -26,19 +24,19 @@ async def get_user(
 ) -> UserPublic:
     user = session.get(User, user_id)
     if user:
-        return UserPublic.from_orm(user)
+        return UserPublic.model_validate(user)
     raise HTTPException(status_code=404, detail="User not found")
 
 
-@router.get("/", response_model=List[UserPublic], response_model_exclude={"password"})
+@router.get("/", response_model=List[UserPublic])
 async def get_users(
     offset: int = 0,
     limit: int = 10,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_admin_user),
-) -> Sequence[UserPublic]:
+) -> List[UserPublic]:
     statement = select(User).offset(offset).limit(limit)
-    return [UserPublic.from_orm(user) for user in session.exec(statement)]
+    return [UserPublic.model_validate(user) for user in session.exec(statement)]
 
 
 @router.post("/", response_model=UserPublic)
@@ -50,12 +48,10 @@ async def create_user(
     session.add(user)
     session.commit()
     session.refresh(user)
-    return UserPublic.from_orm(user)
+    return UserPublic.model_validate(user)
 
 
-@router.put(
-    "/{user_id}", response_model=UserPublic, response_model_exclude={"password"}
-)
+@router.put("/{user_id}", response_model=UserPublic)
 async def update_user(
     user_id: int,
     data: User,
@@ -68,7 +64,7 @@ async def update_user(
             setattr(user, key, value)
         session.commit()
         session.refresh(user)
-        return UserPublic.from_orm(user)
+        return UserPublic.model_validate(user)
     raise HTTPException(status_code=404, detail="User not found")
 
 
@@ -82,5 +78,5 @@ async def delete_user(
     if user:
         session.delete(user)
         session.commit()
-        return UserPublic.from_orm(user)
+        return UserPublic.model_validate(user)
     raise HTTPException(status_code=404, detail="User not found")

@@ -18,11 +18,24 @@ def session(test_user: Dict[str, Any]) -> Generator[Session, None, None]:
     yield session
 
     session.rollback()
+    session.close()
 
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture(scope="module")
+def token(client: TestClient, test_user: Dict[str, Any]) -> str:
+    response = client.post(
+        "/auth/token",
+        data={
+            "username": test_user["email"],
+            "password": test_user["password"],
+        },
+    )
+    return response.json()["access_token"]
 
 
 @pytest.fixture(scope="module")

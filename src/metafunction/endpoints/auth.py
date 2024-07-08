@@ -10,9 +10,9 @@ from metafunction.security.oauth2 import create_access_token, get_current_user
 router = APIRouter()
 
 
-@router.get("/me", response_model=User, response_model_exclude={"password"})
+@router.get("/me", response_model=UserPublic)
 async def me(current_user: User = Depends(get_current_user)) -> UserPublic:
-    return UserPublic.from_orm(current_user)
+    return UserPublic.model_validate(current_user)
 
 
 @router.post("/token")
