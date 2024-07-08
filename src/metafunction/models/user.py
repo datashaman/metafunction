@@ -26,7 +26,8 @@ class UserUpdate(UserBase):
 
 
 class UserPublic(UserBase):
-    id: int
+    model_config = {
+        "from_attributes": True,
+    }
 
-    class Config:
-        from_attributes = True
+    id: int

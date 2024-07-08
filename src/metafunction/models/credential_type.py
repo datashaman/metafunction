@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
 
@@ -13,7 +13,7 @@ class CredentialTypeBase(SQLModel):
 
 class CredentialType(CredentialTypeBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    credentials: list["Credential"] = Relationship(back_populates="credential_type")
+    credentials: List["Credential"] = Relationship(back_populates="credential_type")
 
 
 class CredentialTypeCreate(CredentialTypeBase):
@@ -25,7 +25,8 @@ class CredentialTypeUpdate(CredentialTypeBase):
 
 
 class CredentialTypePublic(CredentialTypeBase):
-    id: int
+    model_config = {
+        "from_attributes": True,
+    }
 
-    class Config:
-        from_attributes = True
+    id: int

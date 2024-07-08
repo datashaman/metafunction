@@ -29,7 +29,8 @@ class CredentialUpdate(CredentialBase):
 
 
 class CredentialPublic(CredentialBase):
-    id: int
+    model_config = {
+        "from_attributes": True,
+    }
 
-    class Config:
-        from_attributes = True
+    id: int
