@@ -1,3 +1,5 @@
+/.coverage*
 /.env
 /.tox/
+/coverage.xml
 __pycache__/

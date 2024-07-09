@@ -3,7 +3,7 @@ from typing import Dict, Any
 from fastapi.testclient import TestClient
 
 from metafunction import app
-from metafunction.models import Session
+from metafunction.models import Session, User
 
 
 def test_login(client: TestClient, test_user: Dict[str, Any], session: Session) -> None:
