@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from metafunction.endpoints import auth, credentials, functions, users
-from metafunction.models import create_tables
+from metafunction.database import create_tables
 
 
 @asynccontextmanager

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict
 
-from metafunction.models import (
+from metafunction.database import (
     get_session,
     Session,
     select,

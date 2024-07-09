@@ -3,7 +3,7 @@ from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from metafunction.models import get_session, Session, select, User, UserPublic
+from metafunction.database import get_session, Session, select, User, UserPublic
 from metafunction.security.oauth2 import create_access_token, get_current_user
 
 
@@ -22,6 +22,7 @@ async def login(
 ) -> Dict[str, str]:
     statement = select(User).where(User.email == form_data.username)
     user = session.exec(statement).first()
+    print('YOYO', user)
 
     if not (user and user.password == form_data.password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")

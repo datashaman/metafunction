@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field
 
-from metafunction.models.types import EncryptedType
+from metafunction.database.types import EncryptedType
 
 
 class UserBase(SQLModel):

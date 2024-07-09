@@ -3,30 +3,29 @@ from typing import Dict, Any
 from fastapi.testclient import TestClient
 
 from metafunction import app
-from metafunction.models import Session, User
+from metafunction.database import Session, User
 
 
-def test_login(client: TestClient, test_user: Dict[str, Any], session: Session) -> None:
+def test_login(client: TestClient, test_user: User) -> None:
     response = client.post(
         "/auth/token",
         data={
-            "username": test_user["email"],
-            "password": test_user["password"],
+            "username": test_user.email,
+            "password": test_user.password,
         },
     )
+    print(response.json())
 
     assert response.status_code == 200
     assert response.json()["access_token"] is not None
 
 
-def test_login_invalid_username(
-    client: TestClient, test_user: Dict[str, Any], session: Session
-) -> None:
+def test_login_invalid_username(client: TestClient, test_user: User) -> None:
     response = client.post(
         "/auth/token",
         data={
             "username": "invalid",
-            "password": test_user["password"],
+            "password": test_user.password,
         },
     )
 
@@ -34,13 +33,11 @@ def test_login_invalid_username(
     assert response.json()["detail"] == "Incorrect email or password"
 
 
-def test_login_invalid_password(
-    client: TestClient, test_user: Dict[str, Any], session: Session
-) -> None:
+def test_login_invalid_password(client: TestClient, test_user: User) -> None:
     response = client.post(
         "/auth/token",
         data={
-            "username": test_user["email"],
+            "username": test_user.email,
             "password": "invalid",
         },
     )
@@ -56,7 +53,7 @@ def test_unauthorized_me(client: TestClient) -> None:
     assert response.json()["detail"] == "Not authenticated"
 
 
-def test_authorized_me(client: TestClient, token: str, test_user: Dict[str, Any]) -> None:
+def test_authorized_me(client: TestClient, token: str, test_user: User) -> None:
     response = client.get(
         "/auth/me",
         headers={
@@ -68,6 +65,6 @@ def test_authorized_me(client: TestClient, token: str, test_user: Dict[str, Any]
     data = response.json()
 
     assert response.status_code == 200
-    assert data["email"] == test_user["email"]
-    assert data["name"] == test_user["name"]
-    assert not 'password' in data
+    assert data["email"] == test_user.email
+    assert data["name"] == test_user.name
+    assert not "password" in data

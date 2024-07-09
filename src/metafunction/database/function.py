@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field
 
-from metafunction.models.types import EncryptedJSON
+from metafunction.database.types import EncryptedJSON
 
 
 class FunctionBase(SQLModel):

@@ -4,7 +4,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
-from metafunction.models import get_session, Session, select, User
+from metafunction.database import get_session, Session, select, User
 from metafunction.settings import SECRET_KEY
 
 

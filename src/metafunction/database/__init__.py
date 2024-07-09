@@ -9,11 +9,13 @@ __all__ = [
     "FunctionPublic",
     "FunctionUpdate",
     "Session",
+    "SQLModel",
     "User",
     "UserCreate",
     "UserPublic",
     "UserUpdate",
     "create_tables",
+    "engine",
     "get_session",
     "select",
 ]
@@ -24,20 +26,20 @@ from sqlmodel import SQLModel, Session, create_engine, select
 
 from metafunction.settings import SQLALCHEMY_DATABASE_URL
 
-from metafunction.models.credential_type import CredentialType
-from metafunction.models.credential import (
+from metafunction.database.credential_type import CredentialType
+from metafunction.database.credential import (
     Credential,
     CredentialCreate,
     CredentialUpdate,
     CredentialPublic,
 )
-from metafunction.models.function import (
+from metafunction.database.function import (
     Function,
     FunctionCreate,
     FunctionUpdate,
     FunctionPublic,
 )
-from metafunction.models.user import (
+from metafunction.database.user import (
     User,
     UserCreate,
     UserUpdate,
@@ -57,3 +59,7 @@ def get_session() -> Generator[Session, None, None]:
 
 def create_tables() -> None:
     SQLModel.metadata.create_all(engine)
+
+
+def drop_tables() -> None:
+    SQLModel.metadata.drop_all(engine)

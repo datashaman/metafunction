@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, Field, Relationship
 
 
 if TYPE_CHECKING:
-    from metafunction.models.credential import Credential
+    from metafunction.database.credential import Credential
 
 
 class CredentialTypeBase(SQLModel):

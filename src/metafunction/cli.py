@@ -1,7 +1,7 @@
 import typer
 from cryptography.fernet import Fernet
 
-from metafunction.models import (
+from metafunction.database import (
     create_tables,
     get_session,
     select,

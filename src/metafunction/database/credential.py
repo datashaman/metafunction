@@ -2,8 +2,8 @@ from typing import Optional, Dict, Any
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field, Relationship
 
-from metafunction.models import CredentialType
-from metafunction.models.types import EncryptedJSON
+from metafunction.database import CredentialType
+from metafunction.database.types import EncryptedJSON
 
 
 class CredentialBase(SQLModel):
