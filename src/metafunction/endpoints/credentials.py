@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Sequence
+from fastapi.responses import JSONResponse
+from typing import List, Sequence, Union
 
 from metafunction.database import (
     get_session,
@@ -9,50 +10,64 @@ from metafunction.database import (
     CredentialCreate,
     CredentialPublic,
 )
+from metafunction.helpers import success_response, fail_response
+from metafunction.responses import SuccessResponse, FailResponse
 
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[Credential])
+@router.get("/", response_model=SuccessResponse[List[CredentialPublic]])
 async def list_credentials(
     offset: int = 0, limit: int = 10, session: Session = Depends(get_session)
-) -> List[CredentialPublic]:
+) -> JSONResponse:
     statement = select(Credential).offset(offset).limit(limit)
-    return [
-        CredentialPublic.model_validate(credential)
-        for credential in session.exec(statement)
-    ]
+    return success_response(
+        data=[
+            CredentialPublic.model_validate(credential)
+            for credential in session.exec(statement)
+        ]
+    )
 
 
-@router.get("/{credential_id}", response_model=CredentialPublic)
+@router.get(
+    "/{credential_id}",
+    response_model=Union[SuccessResponse[CredentialPublic], FailResponse],
+)
 async def read_credential(
     credential_id: int, session: Session = Depends(get_session)
-) -> CredentialPublic:
+) -> JSONResponse:
     credential = session.get(Credential, credential_id)
     if credential is None:
-        raise HTTPException(status_code=404, detail="Credential not found")
-    return CredentialPublic.model_validate(credential)
+        return fail_response(
+            data={"credential_id": "Credential not found"}, status_code=404
+        )
+    return success_response(data=CredentialPublic.model_validate(credential))
 
 
-@router.post("/", response_model=Credential)
+@router.post("/", response_model=SuccessResponse[CredentialPublic])
 async def create_credential(
     data: CredentialCreate, session: Session = Depends(get_session)
-) -> CredentialPublic:
-    credential = Credential(**data.dict())
+) -> JSONResponse:
+    credential = Credential.model_validate(data.dict())
     session.add(credential)
     session.commit()
     session.refresh(credential)
-    return CredentialPublic.model_validate(credential)
+    return success_response(data=CredentialPublic.model_validate(credential))
 
 
-@router.delete("/{credential_id}", response_model=CredentialPublic)
+@router.delete(
+    "/{credential_id}",
+    response_model=Union[SuccessResponse[CredentialPublic], FailResponse],
+)
 async def delete_credential(
     credential_id: int, session: Session = Depends(get_session)
-) -> CredentialPublic:
+) -> JSONResponse:
     credential = session.get(Credential, credential_id)
     if credential is None:
-        raise HTTPException(status_code=404, detail="Credential not found")
+        return fail_response(
+            data={"credential_id": "Credential not found"}, status_code=404
+        )
     session.delete(credential)
     session.commit()
-    return CredentialPublic.model_validate(credential)
+    return success_response(data=CredentialPublic.model_validate(credential))
