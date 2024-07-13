@@ -16,9 +16,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def create_access_token(email: str) -> str:
+def create_access_token(user: User) -> str:
     data = {
-        "sub": email,
+        "sub": user.email,
         "exp": datetime.now(timezone.utc)
         + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }

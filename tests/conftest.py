@@ -24,14 +24,16 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def session(tables: None) -> Generator[Session, None, None]:
+def session() -> Generator[Session, None, None]:
+    SQLModel.metadata.create_all(bind=engine)
     session = next(get_session(rollback=True))
     yield session
+    SQLModel.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture
-def token(client: TestClient, test_user: User) -> str:
-    return create_access_token(test_user.email)
+def token(test_user: User) -> str:
+    return create_access_token(test_user)
 
 
 @pytest.fixture
@@ -46,10 +48,3 @@ def test_user(session: Session) -> User:
             }
         ),
     )
-
-
-@pytest.fixture
-def tables() -> Generator[None, None, None]:
-    SQLModel.metadata.create_all(bind=engine)
-    yield
-    SQLModel.metadata.drop_all(bind=engine)

@@ -30,4 +30,4 @@ async def login(
     user = users.get_by_email(session, email=form_data.username)
     if not (user and user.password == form_data.password):
         return fail_response(username="Incorrect username or password")
-    return Token(access_token=create_access_token(user.email))
+    return Token(access_token=create_access_token(user))
