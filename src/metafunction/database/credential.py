@@ -7,6 +7,7 @@ from metafunction.database.types import EncryptedJSON
 
 
 class CredentialBase(SQLModel):
+    name: str
     credential_type_id: Optional[int]
     data: Dict[str, Any]
 

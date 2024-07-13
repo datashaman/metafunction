@@ -52,9 +52,12 @@ engine = create_engine(
 )
 
 
-def get_session() -> Generator[Session, None, None]:
-    with Session(engine) as session:
-        yield session
+def get_session(rollback: bool = False) -> Generator[Session, None, None]:
+    session = Session(engine)
+    yield session
+    if rollback:
+        session.rollback()
+    session.close()
 
 
 def create_tables() -> None:

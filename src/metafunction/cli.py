@@ -26,8 +26,7 @@ def create_user(name: str, email: str, password: str, is_admin: bool = False) ->
 @app.command()
 def list_users() -> None:
     session = next(get_session())
-    statement = select(User).order_by(User.name)
-    users = session.exec(statement).all()
+    users = session.exec(select(User).order_by(User.name)).all()
     for user in users:
         typer.echo(f"{user.name} - {user.email}")
 
@@ -41,13 +40,11 @@ def generate_key() -> None:
 @app.command()
 def seed_data() -> None:
     session = next(get_session())
-
     credential_types = [
         CredentialType(name="API Key"),
         CredentialType(name="Basic Auth"),
         CredentialType(name="OAuth Token"),
     ]
-
     session.add_all(credential_types)
     session.commit()
 

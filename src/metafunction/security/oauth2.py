@@ -4,7 +4,9 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
+from metafunction.crud import users
 from metafunction.database import get_session, Session, select, User
+from metafunction.helpers import fail_response
 from metafunction.settings import SECRET_KEY
 
 
@@ -14,16 +16,13 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-def create_access_token(
-    data: Dict[str, Any], expires_delta: Optional[timedelta] = None
-) -> str:
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+def create_access_token(email: str) -> str:
+    data = {
+        "sub": email,
+        "exp": datetime.now(timezone.utc)
+        + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    }
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 
 async def get_current_user(
@@ -31,20 +30,15 @@ async def get_current_user(
 ) -> Optional[User]:
     credentials_exception = HTTPException(
         status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        detail="Unauthorized",
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        if (email := payload.get("sub")) is None:
             raise credentials_exception
-    except jwt.PyJWTError:
+    except jwt.PyJWTError as exc:
         raise credentials_exception
-
-    statement = select(User).where(User.email == email)
-
-    return session.exec(statement).first()
+    return users.get_by_email(session, email)
 
 
 async def get_admin_user(
