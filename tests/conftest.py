@@ -1,39 +1,51 @@
-import os
-from typing import Generator, Dict, Any
-
-import pytest  # type: ignore
+import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.engine import Engine
 
-from metafunction import app
+from metafunction.app import app
 from metafunction.crud import users
 from metafunction.database import (
     Session,
-    SQLModel,
     User,
     UserCreate,
     engine,
     get_session,
 )
-from metafunction.security.oauth2 import create_access_token
 
 
 @pytest.fixture
-def client() -> TestClient:
+def session():
+    connection = engine.connect()
+    connection.begin()
+    session = Session(bind=connection)
+
+    yield session
+
+    session.rollback()
+    connection.close()
+
+
+@pytest.fixture
+def client(session: Session) -> TestClient:
+    def override_get_session():
+        yield session
+
+    app.dependency_overrides[get_session] = override_get_session
     return TestClient(app)
 
 
 @pytest.fixture
-def session() -> Generator[Session, None, None]:
-    SQLModel.metadata.create_all(bind=engine)
-    session = next(get_session(rollback=True))
-    yield session
-    SQLModel.metadata.drop_all(bind=engine)
-
-
-@pytest.fixture
-def token(test_user: User) -> str:
-    return create_access_token(test_user)
+def admin_user(session: Session) -> User:
+    return users.create(
+        session,
+        UserCreate.model_validate(
+            {
+                'name': 'Admin User',
+                'email': 'admin@example.com',
+                'password': 'adminpassword',
+                'is_admin': True,
+            }
+        ),
+    )
 
 
 @pytest.fixture
@@ -42,9 +54,9 @@ def test_user(session: Session) -> User:
         session,
         UserCreate.model_validate(
             {
-                "name": "Test User",
-                "email": "test@example.com",
-                "password": "testpassword",
+                'name': 'Test User',
+                'email': 'test@example.com',
+                'password': 'testpassword',
             }
         ),
     )
