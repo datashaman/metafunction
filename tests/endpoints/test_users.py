@@ -132,3 +132,18 @@ def test_delete_user(client: TestClient, session: Session, test_user: User, admi
 
     db_user = users.get(session, test_user.id)
     assert db_user is None
+
+
+def test_nonadmin_user(client: TestClient, test_user: User) -> None:
+    token = test_user.create_access_token()
+
+    response = client.get(
+        f'/users/{test_user.id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    body = response.json()
+    assert body['status'] == 'error'
+    assert body['message'] == 'You are not an admin'
