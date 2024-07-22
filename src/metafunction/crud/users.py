@@ -1,11 +1,10 @@
 from typing import List, Optional
 
-
 from metafunction.database import Session, User, UserCreate, UserUpdate, select
 
 
-def list(session: Session, offset: int = 0, limit: int = 10) -> List[User]:
-    return session.exec(select(User).offset(offset).limit(limit)).all()
+def get_all(session: Session, offset: int = 0, limit: int = 10) -> List[User]:
+    return list(session.exec(select(User).offset(offset).limit(limit)).all())
 
 
 def get(session: Session, user_id: int) -> Optional[User]:
@@ -33,7 +32,8 @@ def update(session: Session, user: User, data: UserUpdate) -> User:
 
 
 def update_by_id(session: Session, user_id: int, data: UserUpdate) -> Optional[User]:
-    if user := get(session, user_id):
+    user = get(session, user_id)
+    if user:
         return update(session, user, data)
     return None
 
@@ -46,5 +46,5 @@ def delete(session: Session, user: User) -> User:
 
 def delete_by_id(session: Session, user_id: int) -> Optional[User]:
     if user := get(session, user_id):
-        delete(session, user)
+        return delete(session, user)
     return user

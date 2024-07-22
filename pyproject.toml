@@ -1,20 +1,22 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.17.0", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "metafunction"
 dynamic = ["version"]
-description = ''
+description = "Nothing here yet"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
-keywords = []
+license = { text = "MIT" }
+keywords = [
+]
 authors = [
-  { name = "datashaman", email = "marlinf@datashaman.com" },
+  { name = "Marlin Forbes", email = "marlinf@datashaman.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -36,29 +38,117 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/datashaman/metafunction#readme"
+Donate = "https://github.com/sponsors/datashaman"
+History = "https://github.com/datashaman/metafunction/blob/master/HISTORY.md"
 Issues = "https://github.com/datashaman/metafunction/issues"
 Source = "https://github.com/datashaman/metafunction"
 
+[project.scripts]
+metafunction = "metafunction.cli:metafunction"
+
 [tool.hatch.version]
-path = "src/metafunction/__about__.py"
+source = "vcs"
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
+[tool.hatch.build.hooks.vcs]
+version-file = "src/metafunction/_version.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
 ]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/metafunction tests}"
 
-[tool.hatch.envs.default]
-installer = "uv"
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+enable-by-default = false
+dependencies = ["hatch-mypyc>=0.14.1"]
+require-runtime-dependencies = true
+mypy-args = [
+  "--no-warn-unused-ignores",
+]
+
+[tool.mypy]
+disallow_untyped_defs = false
+follow_imports = "normal"
+ignore_missing_imports = true
+pretty = true
+show_column_numbers = true
+warn_no_return = false
+warn_unused_ignores = true
+
+[tool.black]
+target-version = ["py38"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "SIM",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105", "S106", "S107",
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "PLC1901", # empty string comparisons
+  "PLW2901", # `for` loop variable overwritten
+  "SIM114", # Combine `if` branches using logical `or` operator
+  "B008", # allow function calls in default arguments (Depends)
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["metafunction"]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use relative imports and assertions
+"tests/**/*" = ["TID252", "S101"]
 
 [tool.coverage.run]
 source_pkgs = ["metafunction", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/metafunction/__about__.py",
+  "src/metafunction/__main__.py",
 ]
 
 [tool.coverage.paths]
@@ -71,24 +161,3 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
-
-[tool.mypy]
-plugins = [
-    "pydantic.mypy",
-    "sqlmypy",
-]
-
-follow_imports = "silent"
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-
-# for strict mypy: (this is the tricky one :-))
-disallow_untyped_defs = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true

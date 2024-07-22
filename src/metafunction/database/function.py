@@ -1,7 +1,7 @@
-from typing import Optional, Dict, Any
+from typing import Any, ClassVar, Dict, Optional
 
 from sqlalchemy import Column
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
 from metafunction.database.types import EncryptedJSON
 
@@ -25,8 +25,8 @@ class FunctionUpdate(FunctionBase):
 
 
 class FunctionPublic(FunctionBase):
-    model_config = {
-        "from_attributes": True,
+    model_config: ClassVar = {
+        'from_attributes': True,
     }
 
     id: int

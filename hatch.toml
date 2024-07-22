@@ -1,0 +1,43 @@
+[envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+[envs.default.env-vars]
+STAGE = "test"
+[envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report --show-missing",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[envs.lint]
+detached = true
+dependencies = [
+  "black>=22.10.0",
+  "mypy>=0.991",
+  "pydantic",
+  "ruff>=0.0.166",
+  "sqlmodel",
+]
+[envs.lint.scripts]
+types = "mypy --install-types --non-interactive {args:src/metafunction tests}"
+style = [
+  "ruff check {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff check --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "types",
+]

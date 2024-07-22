@@ -1,14 +1,29 @@
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+from typing import ClassVar, Optional
+
+import jwt
 from sqlalchemy import Column
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
 from metafunction.database.types import EncryptedType
+from metafunction.settings import (
+    ACCESS_TOKEN_ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    SECRET_KEY,
+)
 
 
 class UserBase(SQLModel):
     name: str
     email: str
     is_admin: bool = False
+
+    def create_access_token(self) -> str:
+        data = {
+            'sub': self.email,
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        }
+        return jwt.encode(data, SECRET_KEY, algorithm=ACCESS_TOKEN_ALGORITHM)
 
 
 class User(UserBase, table=True):
@@ -27,8 +42,8 @@ class UserUpdate(UserBase):
 
 
 class UserPublic(UserBase):
-    model_config = {
-        "from_attributes": True,
+    model_config: ClassVar = {
+        'from_attributes': True,
     }
 
     id: int

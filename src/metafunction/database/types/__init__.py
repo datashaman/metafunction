@@ -1,6 +1,6 @@
 __all__ = [
-    "EncryptedJSON",
-    "EncryptedType",
+    'EncryptedJSON',
+    'EncryptedType',
 ]
 
 from metafunction.database.types.encrypted_json import EncryptedJSON

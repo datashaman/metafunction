@@ -1,8 +1,8 @@
 serve:
-	hatch run uvicorn metafunction:app --reload
+	hatch run uvicorn metafunction.app:app --reload
 
-tox:
-	hatch run tox run
+test:
+	hatch test
 
 venv:
 	rm -rf .venv
