@@ -12,7 +12,6 @@ from metafunction.database import (
     get_session,
 )
 
-
 SQLModel.metadata.create_all(bind=engine)
 
 
