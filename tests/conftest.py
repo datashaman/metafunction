@@ -1,15 +1,18 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from metafunction.app import app
+from metafunction import app
 from metafunction.crud import users
 from metafunction.database import (
     Session,
+    SQLModel,
     User,
     UserCreate,
     engine,
     get_session,
 )
+
+SQLModel.metadata.create_all(bind=engine)
 
 
 @pytest.fixture

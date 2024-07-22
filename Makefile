@@ -1,5 +1,5 @@
 serve:
-	hatch run uvicorn metafunction.app:app --reload
+	hatch run uvicorn metafunction:app --reload
 
 test:
 	hatch test

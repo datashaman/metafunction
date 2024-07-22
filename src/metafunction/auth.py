@@ -11,21 +11,12 @@ from metafunction.settings import ACCESS_TOKEN_ALGORITHM, SECRET_KEY
 get_token = OAuth2PasswordBearer(tokenUrl='token')
 
 
-async def get_current_user(token: str = Depends(get_token), session: Session = Depends(get_session)) -> Optional[User]:
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail='Unauthorized',
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
-        if (email := payload.get('sub')) is None:
-            raise credentials_exception
-    except jwt.PyJWTError as exc:
-        raise credentials_exception from exc
-    return users.get_by_email(session, email)
+def get_current_user(token: str = Depends(get_token), session: Session = Depends(get_session)) -> Optional[User]:
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
+    return users.get_by_email(session, payload['sub'])
 
 
-async def get_admin_user(
+def get_admin_user(
     current_user: User = Depends(get_current_user),
 ) -> Optional[User]:
     if not (current_user and current_user.is_admin):
