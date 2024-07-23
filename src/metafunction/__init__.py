@@ -7,7 +7,7 @@ from sqlmodel import SQLModel
 
 from metafunction.database import engine
 from metafunction.endpoints import auth, credentials, functions, users
-from metafunction.helpers import error_response
+from metafunction.responses import error_response
 
 
 @asynccontextmanager

@@ -3,13 +3,18 @@ from typing import Union
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
 
 from metafunction.auth import get_current_user
 from metafunction.crud import users
 from metafunction.database import Session, User, UserPublic, get_session
-from metafunction.helpers import fail_response, success_response
-from metafunction.models.token import Token
-from metafunction.responses import FailResponse, SuccessResponse
+from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = 'bearer'
+
 
 router = APIRouter()
 
