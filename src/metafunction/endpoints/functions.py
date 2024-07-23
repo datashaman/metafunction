@@ -8,6 +8,7 @@ from metafunction.crud import functions
 from metafunction.database import (
     FunctionCreate,
     FunctionPublic,
+    FunctionUpdate,
     Session,
     get_session,
 )
@@ -24,7 +25,7 @@ router = APIRouter()
 )
 async def create_function(data: FunctionCreate, session: Session = Depends(get_session)) -> JSONResponse:
     function = functions.create(session, data)
-    return success_response(function=FunctionPublic.model_validate(function))
+    return success_response(status_code=201, function=FunctionPublic.model_validate(function))
 
 
 @router.get(
@@ -48,5 +49,29 @@ async def read_functions(offset: int = 0, limit: int = 10, session: Session = De
 )
 async def read_function(function_id: int, session: Session = Depends(get_session)) -> JSONResponse:
     if function := functions.get(session, function_id):
+        return success_response(function=FunctionPublic.model_validate(function))
+    return fail_response(status_code=404, function_id='Function not found')
+
+
+@router.put(
+    '/{function_id}',
+    response_model=SuccessResponse[FunctionPublic],
+    dependencies=[Depends(get_current_user)],
+)
+async def update_function(
+    function_id: int, data: FunctionUpdate, session: Session = Depends(get_session)
+) -> JSONResponse:
+    if function := functions.update_by_id(session, function_id, data):
+        return success_response(function=FunctionPublic.model_validate(function))
+    return fail_response(status_code=404, function_id='Function not found')
+
+
+@router.delete(
+    '/{function_id}',
+    response_model=SuccessResponse[FunctionPublic],
+    dependencies=[Depends(get_current_user)],
+)
+async def delete_function(function_id: int, session: Session = Depends(get_session)) -> JSONResponse:
+    if function := functions.delete_by_id(session, function_id):
         return success_response(function=FunctionPublic.model_validate(function))
     return fail_response(status_code=404, function_id='Function not found')

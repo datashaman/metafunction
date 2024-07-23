@@ -47,9 +47,9 @@ def generate_key() -> None:
 def seed_data() -> None:
     session = next(get_session())
     credential_types = [
-        CredentialType(name='API Key'),
-        CredentialType(name='Basic Auth'),
-        CredentialType(name='OAuth Token'),
+        CredentialType(id='token', name='API Key / Token'),
+        CredentialType(id='basic', name='Basic Auth'),
+        CredentialType(id='oauth', name='OAuth Token'),
     ]
     session.add_all(credential_types)
     session.commit()

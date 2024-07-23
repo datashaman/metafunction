@@ -24,6 +24,21 @@ def test_get_user(client: TestClient, admin_user: User) -> None:
     assert 'password' not in body['data']['user']
 
 
+def test_get_user_invalid(client: TestClient, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    response = client.get(
+        '/users/999',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data']['user_id'] == 'User not found'
+
+
 def test_get_users(client: TestClient, admin_user: User) -> None:
     token = admin_user.create_access_token()
 
@@ -80,6 +95,50 @@ def test_create_user(client: TestClient, session: Session, admin_user: User) -> 
     assert not db_user.is_admin
 
 
+def test_create_user_invalid_email(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    json = {
+        'email': test_user.email,
+        'name': 'Test User 1',
+        'password': 'password',
+    }
+
+    response = client.post(
+        '/users',
+        headers={'Authorization': f'Bearer {token}'},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data'] == {'email': 'User email exists'}
+
+
+def test_create_user_invalid_name(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    json = {
+        'email': 'test1@example.com',
+        'name': test_user.name,
+        'password': 'password',
+    }
+
+    response = client.post(
+        '/users',
+        headers={'Authorization': f'Bearer {token}'},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data'] == {'name': 'User name exists'}
+
+
 def test_update_user(client: TestClient, session: Session, test_user: User, admin_user: User) -> None:
     token = admin_user.create_access_token()
 
@@ -112,6 +171,68 @@ def test_update_user(client: TestClient, session: Session, test_user: User, admi
     assert db_user.name == json['name']
 
 
+def test_update_user_invalid(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    response = client.put(
+        '/users/999',
+        headers={'Authorization': f'Bearer {token}'},
+        json={
+            'email': 'test2@example.com',
+            'name': 'Test User 2',
+        },
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data']['user_id'] == 'User not found'
+
+
+def test_update_user_invalid_email(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    json = {
+        'email': admin_user.email,
+        'name': test_user.name,
+    }
+
+    response = client.put(
+        f'/users/{test_user.id}',
+        headers={'Authorization': f'Bearer {token}'},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data'] == {'email': 'User email exists'}
+
+
+def test_update_user_invalid_name(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    json = {
+        'email': test_user.email,
+        'name': admin_user.name,
+        'password': 'password',
+    }
+
+    response = client.put(
+        f'/users/{test_user.id}',
+        headers={'Authorization': f'Bearer {token}'},
+        json=json,
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data'] == {'name': 'User name exists'}
+
+
 def test_delete_user(client: TestClient, session: Session, test_user: User, admin_user: User) -> None:
     token = admin_user.create_access_token()
 
@@ -132,6 +253,21 @@ def test_delete_user(client: TestClient, session: Session, test_user: User, admi
 
     db_user = users.get(session, test_user.id)
     assert db_user is None
+
+
+def test_delete_user_invalid(client: TestClient, test_user: User, admin_user: User) -> None:
+    token = admin_user.create_access_token()
+
+    response = client.delete(
+        '/users/999',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    body = response.json()
+    assert body['status'] == 'fail'
+    assert body['data']['user_id'] == 'User not found'
 
 
 def test_nonadmin_user(client: TestClient, test_user: User) -> None:

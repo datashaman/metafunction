@@ -4,6 +4,8 @@ __all__ = [
     'CredentialPublic',
     'CredentialUpdate',
     'CredentialType',
+    'CredentialTypeCreate',
+    'CredentialTypeUpdate',
     'Function',
     'FunctionCreate',
     'FunctionPublic',
@@ -29,6 +31,8 @@ from metafunction.database.credential import (
     CredentialCreate,
     CredentialPublic,
     CredentialType,
+    CredentialTypeCreate,
+    CredentialTypeUpdate,
     CredentialUpdate,
 )
 from metafunction.database.function import (

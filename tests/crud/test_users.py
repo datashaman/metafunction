@@ -71,9 +71,36 @@ def test_update_by_id(session: Session, test_user: User):
     assert user.name == 'Test User 2'
 
 
+def test_update_by_unknown_id(session: Session):
+    user = users.update_by_id(
+        session,
+        1,
+        UserUpdate.model_validate(
+            {
+                'email': 'test2@example.com',
+                'name': 'Test User 2',
+            }
+        ),
+    )
+    assert user is None
+
+
 def test_delete(session: Session, test_user: User):
     user = users.delete(session, test_user)
     assert test_user.id is not None
     assert user is not None
     assert user.id == test_user.id
     assert users.get(session, test_user.id) is None
+
+
+def test_delete_by_id(session: Session, test_user: User):
+    assert test_user.id is not None
+    user = users.delete_by_id(session, test_user.id)
+    assert user is not None
+    assert user.id == test_user.id
+    assert users.get(session, test_user.id) is None
+
+
+def test_delete_by_unknown_id(session: Session):
+    user = users.delete_by_id(session, 1)
+    assert user is None
