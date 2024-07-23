@@ -72,7 +72,7 @@ def test_user(session: Session) -> User:
 
 
 @pytest.fixture
-def test_credential(session: Session) -> Credential:
+def test_credential(session: Session, test_user: User) -> Credential:
     credential_type = CredentialType.model_validate(CredentialTypeCreate(id='password', name='Password'))
     session.add(credential_type)
     session.commit()
@@ -80,21 +80,22 @@ def test_credential(session: Session) -> Credential:
 
     return credentials.create(
         session,
+        test_user,
         CredentialCreate.model_validate(
             {
                 'credential_type_id': credential_type.id,
                 'data': {},
                 'name': 'Test Credential',
-                'user_id': 1,
             }
         ),
     )
 
 
 @pytest.fixture
-def test_function(session: Session) -> Function:
+def test_function(session: Session, test_user: User) -> Function:
     return functions.create(
         session,
+        test_user,
         FunctionCreate.model_validate(
             {
                 'name': 'Test Function',

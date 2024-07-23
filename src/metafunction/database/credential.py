@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlmodel import Field, Relationship, SQLModel
 
 from metafunction.database.types import EncryptedJSON
+from metafunction.database.user import User
 
 
 class CredentialTypeBase(SQLModel):
@@ -40,6 +41,8 @@ class Credential(CredentialBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     credential_type_id: str = Field(foreign_key='credentialtype.id')
     credential_type: CredentialType = Relationship(back_populates='credentials')
+    user_id: int = Field(foreign_key='user.id')
+    user: User = Relationship(back_populates='credentials')
     data: Dict[str, Any] = Field(default={}, sa_column=Column(EncryptedJSON))
 
 
