@@ -1,11 +1,7 @@
-from metafunction.crud import functions
-from metafunction.database import (
-    Function,
-    FunctionCreate,
-    FunctionUpdate,
-    Session,
-    User,
-)
+from metafunction.database import Session
+from metafunction.functions import crud as functions
+from metafunction.functions.models import Function, FunctionCreate, FunctionUpdate
+from metafunction.users.models import User
 
 
 def test_get_all(session: Session, test_user: User):

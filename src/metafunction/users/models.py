@@ -5,16 +5,16 @@ import jwt
 from sqlalchemy import Column
 from sqlmodel import Field, Relationship, SQLModel
 
-from metafunction.database.types import EncryptedType
 from metafunction.settings import (
     ACCESS_TOKEN_ALGORITHM,
     ACCESS_TOKEN_EXPIRE_MINUTES,
     SECRET_KEY,
 )
+from metafunction.types.encrypted_type import EncryptedType
 
 if TYPE_CHECKING:
-    from metafunction.database.models.credential import Credential
-    from metafunction.database.models.function import Function
+    from metafunction.credentials.models import Credential
+    from metafunction.functions.models import Function
 
 
 class UserBase(SQLModel):

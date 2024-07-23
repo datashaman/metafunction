@@ -1,13 +1,11 @@
 from typing import List, Optional
 
+from metafunction.credentials.models import Credential, CredentialCreate, CredentialUpdate
 from metafunction.database import (
-    Credential,
-    CredentialCreate,
-    CredentialUpdate,
     Session,
-    User,
     select,
 )
+from metafunction.users.models import User
 
 
 def get_all(

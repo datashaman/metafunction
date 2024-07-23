@@ -1,8 +1,10 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from metafunction.crud import credentials
-from metafunction.database import Credential, Session, User
+from metafunction.credentials import crud as credentials
+from metafunction.credentials.models import Credential
+from metafunction.database import Session
+from metafunction.users.models import User
 
 
 def test_get_credential(client: TestClient, test_user: User, test_credential: Credential) -> None:

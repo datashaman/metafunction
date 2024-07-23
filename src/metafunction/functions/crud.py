@@ -1,13 +1,8 @@
 from typing import List, Optional
 
-from metafunction.database import (
-    Function,
-    FunctionCreate,
-    FunctionUpdate,
-    Session,
-    User,
-    select,
-)
+from metafunction.database import Session, select
+from metafunction.functions.models import Function, FunctionCreate, FunctionUpdate
+from metafunction.users.models import User
 
 
 def get_all(

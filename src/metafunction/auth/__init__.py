@@ -4,9 +4,10 @@ import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-from metafunction.crud import users
-from metafunction.database import Session, User, get_session
+from metafunction.database import Session, get_session
 from metafunction.settings import ACCESS_TOKEN_ALGORITHM, SECRET_KEY
+from metafunction.users import crud as users
+from metafunction.users.models import User
 
 get_token = OAuth2PasswordBearer(tokenUrl='token')
 

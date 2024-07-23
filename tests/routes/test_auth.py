@@ -1,7 +1,8 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from metafunction.database import Session, User
+from metafunction.database import Session
+from metafunction.users.models import User
 
 
 def test_login(client: TestClient, test_user: User, session: Session) -> None:
