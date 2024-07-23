@@ -1,10 +1,10 @@
+CMD ?= --help
+
 serve:
-	hatch run uvicorn metafunction:app --reload
+	hatch run serve
 
 test:
 	hatch test
 
-venv:
-	rm -rf .venv
-	python3 -m venv .venv
-	.venv/bin/pip install -r requirements.txt
+cli:
+	hatch run python -m metafunction.cli $(CMD)

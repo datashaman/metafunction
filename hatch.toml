@@ -4,16 +4,17 @@ dependencies = [
   "pytest",
 ]
 [envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage html",
-]
 cov = [
   "test-cov",
   "cov-report",
 ]
+cov-report = [
+  "- coverage combine",
+  "coverage html",
+]
+serve = "uvicorn metafunction:app --reload"
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
 
 [envs.lint]
 detached = true
@@ -25,16 +26,16 @@ dependencies = [
   "sqlmodel",
 ]
 [envs.lint.scripts]
-types = "mypy --install-types --non-interactive {args:src/metafunction tests}"
-style = [
-  "ruff check {args:.}",
-  "black --check --diff {args:.}",
-]
-fmt = [
+fix = [
   "black {args:.}",
   "ruff check --fix {args:.}",
   "style",
 ]
+style = [
+  "ruff check {args:.}",
+  "black --check --diff {args:.}",
+]
+types = "mypy --install-types --non-interactive {args:src/metafunction tests}"
 all = [
   "style",
   "types",
