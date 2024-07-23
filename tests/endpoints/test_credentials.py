@@ -79,10 +79,11 @@ def test_create_credential(client: TestClient, session: Session, test_user: User
     assert body['data']['credential']['name'] == json['name']
     assert body['data']['credential']['data'] == json['data']
 
-    credential = credentials.get(session, body['data']['credential']['id'])
+    credential = credentials.get(session, test_user, body['data']['credential']['id'])
     assert credential is not None
     assert credential.name == json['name']
     assert credential.data == json['data']
+    assert credential.user_id == test_user.id
 
 
 def test_delete_credential(client: TestClient, session: Session, test_user: User, test_credential: Credential) -> None:
@@ -99,7 +100,7 @@ def test_delete_credential(client: TestClient, session: Session, test_user: User
     assert body['status'] == 'success'
 
     assert test_credential.id is not None
-    credential = credentials.get(session, test_credential.id)
+    credential = credentials.get(session, test_user, test_credential.id)
     assert credential is None
 
 

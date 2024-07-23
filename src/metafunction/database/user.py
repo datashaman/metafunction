@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
-from typing import ClassVar, Optional
+from typing import TYPE_CHECKING, ClassVar, List, Optional
 
 import jwt
 from sqlalchemy import Column
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 from metafunction.database.types import EncryptedType
 from metafunction.settings import (
@@ -11,6 +11,10 @@ from metafunction.settings import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     SECRET_KEY,
 )
+
+if TYPE_CHECKING:
+    from metafunction.database.models.credential import Credential
+    from metafunction.database.models.function import Function
 
 
 class UserBase(SQLModel):
@@ -31,6 +35,8 @@ class User(UserBase, table=True):
     name: str = Field(unique=True)
     email: str = Field(unique=True)
     password: str = Field(sa_column=Column(EncryptedType))
+    credentials: List['Credential'] = Relationship(back_populates='user')
+    functions: List['Function'] = Relationship(back_populates='user')
 
 
 class UserCreate(UserBase):

@@ -9,6 +9,7 @@ from metafunction.database import (
     CredentialCreate,
     CredentialPublic,
     Session,
+    User,
     get_session,
 )
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
@@ -19,13 +20,17 @@ router = APIRouter()
 @router.get(
     '/',
     response_model=SuccessResponse[List[CredentialPublic]],
-    dependencies=[Depends(get_current_user)],
 )
-async def list_credentials(offset: int = 0, limit: int = 10, session: Session = Depends(get_session)) -> JSONResponse:
+async def list_credentials(
+    offset: int = 0,
+    limit: int = 10,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
     return success_response(
         credentials=[
             CredentialPublic.model_validate(credential)
-            for credential in credentials.get_all(session, offset=offset, limit=limit)
+            for credential in credentials.get_all(session, current_user, offset=offset, limit=limit)
         ]
     )
 
@@ -33,10 +38,13 @@ async def list_credentials(offset: int = 0, limit: int = 10, session: Session = 
 @router.get(
     '/{credential_id}',
     response_model=Union[SuccessResponse[CredentialPublic], FailResponse],
-    dependencies=[Depends(get_current_user)],
 )
-async def read_credential(credential_id: int, session: Session = Depends(get_session)) -> JSONResponse:
-    if credential := credentials.get(session, credential_id):
+async def read_credential(
+    credential_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    if credential := credentials.get(session, current_user, credential_id):
         return success_response(credential=CredentialPublic.model_validate(credential))
     return fail_response(status_code=404, credential_id='Credential not found')
 
@@ -44,19 +52,25 @@ async def read_credential(credential_id: int, session: Session = Depends(get_ses
 @router.post(
     '/',
     response_model=SuccessResponse[CredentialPublic],
-    dependencies=[Depends(get_current_user)],
 )
-async def create_credential(data: CredentialCreate, session: Session = Depends(get_session)) -> JSONResponse:
-    credential = credentials.create(session, data)
+async def create_credential(
+    data: CredentialCreate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    credential = credentials.create(session, current_user, data)
     return success_response(status_code=201, credential=CredentialPublic.model_validate(credential))
 
 
 @router.delete(
     '/{credential_id}',
     response_model=Union[SuccessResponse[CredentialPublic], FailResponse],
-    dependencies=[Depends(get_current_user)],
 )
-async def delete_credential(credential_id: int, session: Session = Depends(get_session)) -> JSONResponse:
-    if credential := credentials.delete_by_id(session, credential_id):
+async def delete_credential(
+    credential_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    if credential := credentials.delete_by_id(session, current_user, credential_id):
         return success_response(credential=CredentialPublic.model_validate(credential))
     return fail_response(status_code=404, credential_id='Credential not found')

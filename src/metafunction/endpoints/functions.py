@@ -10,6 +10,7 @@ from metafunction.database import (
     FunctionPublic,
     FunctionUpdate,
     Session,
+    User,
     get_session,
 )
 from metafunction.responses import SuccessResponse, fail_response, success_response
@@ -20,23 +21,30 @@ router = APIRouter()
 @router.post(
     '/',
     response_model=SuccessResponse[FunctionPublic],
-    dependencies=[Depends(get_current_user)],
 )
-async def create_function(data: FunctionCreate, session: Session = Depends(get_session)) -> JSONResponse:
-    function = functions.create(session, data)
+async def create_function(
+    data: FunctionCreate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    function = functions.create(session, current_user, data)
     return success_response(status_code=201, function=FunctionPublic.model_validate(function))
 
 
 @router.get(
     '/',
     response_model=SuccessResponse[List[FunctionPublic]],
-    dependencies=[Depends(get_current_user)],
 )
-async def read_functions(offset: int = 0, limit: int = 10, session: Session = Depends(get_session)) -> JSONResponse:
+async def read_functions(
+    offset: int = 0,
+    limit: int = 10,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
     return success_response(
         functions=[
             FunctionPublic.model_validate(function)
-            for function in functions.get_all(session, offset=offset, limit=limit)
+            for function in functions.get_all(session, current_user, offset=offset, limit=limit)
         ]
     )
 
@@ -44,10 +52,13 @@ async def read_functions(offset: int = 0, limit: int = 10, session: Session = De
 @router.get(
     '/{function_id}',
     response_model=SuccessResponse[FunctionPublic],
-    dependencies=[Depends(get_current_user)],
 )
-async def read_function(function_id: int, session: Session = Depends(get_session)) -> JSONResponse:
-    if function := functions.get(session, function_id):
+async def read_function(
+    function_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    if function := functions.get(session, current_user, function_id):
         return success_response(function=FunctionPublic.model_validate(function))
     return fail_response(status_code=404, function_id='Function not found')
 
@@ -55,12 +66,14 @@ async def read_function(function_id: int, session: Session = Depends(get_session
 @router.put(
     '/{function_id}',
     response_model=SuccessResponse[FunctionPublic],
-    dependencies=[Depends(get_current_user)],
 )
 async def update_function(
-    function_id: int, data: FunctionUpdate, session: Session = Depends(get_session)
+    function_id: int,
+    data: FunctionUpdate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ) -> JSONResponse:
-    if function := functions.update_by_id(session, function_id, data):
+    if function := functions.update_by_id(session, current_user, function_id, data):
         return success_response(function=FunctionPublic.model_validate(function))
     return fail_response(status_code=404, function_id='Function not found')
 
@@ -68,9 +81,12 @@ async def update_function(
 @router.delete(
     '/{function_id}',
     response_model=SuccessResponse[FunctionPublic],
-    dependencies=[Depends(get_current_user)],
 )
-async def delete_function(function_id: int, session: Session = Depends(get_session)) -> JSONResponse:
-    if function := functions.delete_by_id(session, function_id):
+async def delete_function(
+    function_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> JSONResponse:
+    if function := functions.delete_by_id(session, current_user, function_id):
         return success_response(function=FunctionPublic.model_validate(function))
     return fail_response(status_code=404, function_id='Function not found')

@@ -78,10 +78,11 @@ def test_create_function(client: TestClient, session: Session, test_user: User) 
     assert body['data']['function']['name'] == json['name']
     assert body['data']['function']['specification'] == json['specification']
 
-    function = functions.get(session, body['data']['function']['id'])
+    function = functions.get(session, test_user, body['data']['function']['id'])
     assert function is not None
     assert function.name == json['name']
     assert function.specification == json['specification']
+    assert function.user_id == test_user.id
 
 
 def test_update_function(client: TestClient, session: Session, test_user: User, test_function: Function) -> None:
@@ -106,7 +107,7 @@ def test_update_function(client: TestClient, session: Session, test_user: User, 
     assert body['data']['function']['specification'] == json['specification']
 
     assert test_function.id is not None
-    function = functions.get(session, test_function.id)
+    function = functions.get(session, test_user, test_function.id)
     assert function is not None
     assert function.name == json['name']
     assert function.specification == json['specification']
@@ -144,7 +145,7 @@ def test_delete_function(client: TestClient, session: Session, test_user: User, 
     assert response.status_code == status.HTTP_200_OK
 
     assert test_function.id is not None
-    function = functions.get(session, test_function.id)
+    function = functions.get(session, test_user, test_function.id)
     assert function is None
 
 
