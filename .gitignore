@@ -1,6 +1,7 @@
 /.coverage*
 /.env
 /.env.local
+/coverage/
 /coverage.xml
 /src/metafunction/_version.py
 __pycache__/

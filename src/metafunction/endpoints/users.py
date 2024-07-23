@@ -67,12 +67,12 @@ async def create_user(
     try:
         user = users.create(session, data)
         return success_response(status_code=201, user=UserPublic.model_validate(user).model_dump())
-    except IntegrityError as e:
-        if 'UNIQUE constraint failed: user.name' in str(e):
+    except IntegrityError as exc:
+        if 'UNIQUE constraint failed: user.name' in str(exc):
             return fail_response(name='User name exists')
-        if 'UNIQUE constraint failed: user.email' in str(e):
+        if 'UNIQUE constraint failed: user.email' in str(exc):
             return fail_response(email='User email exists')
-        raise e
+        raise exc
 
 
 @router.put(
@@ -88,12 +88,12 @@ async def update_user(
     try:
         if user := users.update_by_id(session, user_id, data):
             return success_response(user=UserPublic.model_validate(user).model_dump())
-    except IntegrityError as e:
-        if 'UNIQUE constraint failed: user.name' in str(e):
+    except IntegrityError as exc:
+        if 'UNIQUE constraint failed: user.name' in str(exc):
             return fail_response(name='User name exists')
-        if 'UNIQUE constraint failed: user.email' in str(e):
+        if 'UNIQUE constraint failed: user.email' in str(exc):
             return fail_response(email='User email exists')
-        raise e
+        raise exc
     return fail_response(status_code=404, user_id='User not found')
 
 

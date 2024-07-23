@@ -39,7 +39,7 @@ async def list_credentials(offset: int = 0, limit: int = 10, session: Session = 
 async def read_credential(credential_id: int, session: Session = Depends(get_session)) -> JSONResponse:
     if credential := credentials.get(session, credential_id):
         return success_response(credential=CredentialPublic.model_validate(credential))
-    return fail_response(data={'credential_id': 'Credential not found'}, status_code=404)
+    return fail_response(status_code=404, credential_id='Credential not found')
 
 
 @router.post(
@@ -49,7 +49,7 @@ async def read_credential(credential_id: int, session: Session = Depends(get_ses
 )
 async def create_credential(data: CredentialCreate, session: Session = Depends(get_session)) -> JSONResponse:
     credential = credentials.create(session, data)
-    return success_response(credential=CredentialPublic.model_validate(credential))
+    return success_response(status_code=201, credential=CredentialPublic.model_validate(credential))
 
 
 @router.delete(
@@ -60,4 +60,4 @@ async def create_credential(data: CredentialCreate, session: Session = Depends(g
 async def delete_credential(credential_id: int, session: Session = Depends(get_session)) -> JSONResponse:
     if credential := credentials.delete_by_id(session, credential_id):
         return success_response(credential=CredentialPublic.model_validate(credential))
-    return fail_response(data={'credential_id': 'Credential not found'}, status_code=404)
+    return fail_response(status_code=404, credential_id='Credential not found')

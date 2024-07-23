@@ -10,7 +10,7 @@ from metafunction.database import (
 
 
 def get_all(session: Session, offset: int = 0, limit: int = 10) -> List[Function]:
-    return list(session.query(Function).offset(offset).limit(limit).all())
+    return list(session.exec(select(Function).offset(offset).limit(limit)).all())
 
 
 def get(session: Session, function_id: int) -> Optional[Function]:

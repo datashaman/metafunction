@@ -28,5 +28,5 @@ class EncryptedJSON(TypeDecorator[Optional[JSONDict]]):
         decrypted_value = crypt.decrypt(encrypted_value).decode('utf-8')
         return MutableDict(**json.loads(decrypted_value))
 
-    def copy_value(self, value: Any) -> Optional[JSONDict]:  # type: ignore
+    def copy_value(self, value: Any) -> Optional[JSONDict]:
         return MutableDict.coerce(value, self.impl)
