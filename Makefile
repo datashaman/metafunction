@@ -6,5 +6,9 @@ serve:
 test:
 	hatch test
 
+cov:
+	hatch run cov
+	open htmlcov/index.html
+
 cli:
-	hatch run python -m metafunction.cli $(CMD)
+	hatch run metafunction $(CMD)
