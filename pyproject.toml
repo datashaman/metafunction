@@ -44,7 +44,7 @@ Issues = "https://github.com/datashaman/metafunction/issues"
 Source = "https://github.com/datashaman/metafunction"
 
 [project.scripts]
-metafunction = "metafunction.cli:metafunction"
+metafunction = "metafunction.cli:app"
 
 [tool.hatch.version]
 source = "vcs"
