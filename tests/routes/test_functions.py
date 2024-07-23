@@ -1,8 +1,10 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from metafunction.crud import functions
-from metafunction.database import Function, Session, User
+from metafunction.database import Session
+from metafunction.functions import crud as functions
+from metafunction.functions.models import Function
+from metafunction.users.models import User
 
 
 def test_get_function(client: TestClient, test_user: User, test_function: Function) -> None:

@@ -5,9 +5,12 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlmodel import SQLModel
 
+from metafunction.auth import routes as auth
+from metafunction.credentials import routes as credentials
 from metafunction.database import engine
-from metafunction.endpoints import auth, credentials, functions, users
+from metafunction.functions import routes as functions
 from metafunction.responses import error_response
+from metafunction.users import routes as users
 
 
 @asynccontextmanager

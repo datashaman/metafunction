@@ -3,8 +3,8 @@ from typing import Any, ClassVar, Dict, List, Optional
 from sqlalchemy import Column
 from sqlmodel import Field, Relationship, SQLModel
 
-from metafunction.database.types import EncryptedJSON
-from metafunction.database.user import User
+from metafunction.types.encrypted_json import EncryptedJSON
+from metafunction.users.models import User
 
 
 class CredentialTypeBase(SQLModel):

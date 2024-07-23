@@ -1,13 +1,13 @@
-from metafunction.crud import credentials
-from metafunction.database import (
+from metafunction.credentials import crud as credentials
+from metafunction.credentials.models import (
     Credential,
     CredentialCreate,
     CredentialType,
     CredentialTypeCreate,
     CredentialUpdate,
-    Session,
-    User,
 )
+from metafunction.database import Session
+from metafunction.users.models import User
 
 
 def test_get_all(session: Session, test_user: User):

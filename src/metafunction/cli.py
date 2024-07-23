@@ -7,12 +7,9 @@ try:
 except ImportError:
     version = 'dev'
 
-from metafunction.database import (
-    CredentialType,
-    User,
-    get_session,
-    select,
-)
+from metafunction.credentials.models import CredentialType
+from metafunction.database import get_session, select
+from metafunction.users.models import User
 
 
 def version_callback(*, value: bool) -> None:

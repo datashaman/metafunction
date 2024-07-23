@@ -4,15 +4,11 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from metafunction.auth import get_current_user
-from metafunction.crud import credentials
-from metafunction.database import (
-    CredentialCreate,
-    CredentialPublic,
-    Session,
-    User,
-    get_session,
-)
+from metafunction.credentials import crud as credentials
+from metafunction.credentials.models import CredentialCreate, CredentialPublic
+from metafunction.database import Session, get_session
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
+from metafunction.users.models import User
 
 router = APIRouter()
 

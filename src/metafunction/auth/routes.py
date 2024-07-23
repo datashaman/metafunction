@@ -6,9 +6,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from metafunction.auth import get_current_user
-from metafunction.crud import users
-from metafunction.database import Session, User, UserPublic, get_session
+from metafunction.database import Session, get_session
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
+from metafunction.users import crud as users
+from metafunction.users.models import User, UserPublic
 
 
 class Token(BaseModel):

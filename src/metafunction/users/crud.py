@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from metafunction.database import Session, User, UserCreate, UserUpdate, select
+from metafunction.database import Session, select
+from metafunction.users.models import User, UserCreate, UserUpdate
 
 
 def get_all(session: Session, offset: int = 0, limit: int = 10) -> List[User]:
