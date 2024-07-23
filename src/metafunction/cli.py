@@ -2,7 +2,11 @@ import typer
 from cryptography.fernet import Fernet
 from typing_extensions import Annotated
 
-from metafunction._version import version
+try:
+    from metafunction._version import version
+except ImportError:
+    version = 'dev'
+
 from metafunction.database import (
     CredentialType,
     User,
