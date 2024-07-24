@@ -4,13 +4,12 @@ import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-from metafunction.crud import Repository
 from metafunction.database import Session, get_session
+from metafunction.repositories import users
 from metafunction.settings import ACCESS_TOKEN_ALGORITHM, SECRET_KEY
 from metafunction.users.models import User, UserCreate, UserUpdate
 
 get_token = OAuth2PasswordBearer(tokenUrl='token')
-users = Repository[User, UserCreate, UserUpdate](User)
 
 
 def get_current_user(token: str = Depends(get_token), session: Session = Depends(get_session)) -> Optional[User]:

@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from metafunction.auth import get_current_user
-from metafunction.crud import Repository
+from metafunction.repositories import users
 from metafunction.database import Session, get_session
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
 from metafunction.users.models import User, UserCreate, UserPublic, UserUpdate
@@ -17,7 +17,6 @@ class Token(BaseModel):
     token_type: str = 'bearer'
 
 
-users = Repository[User, UserCreate, UserUpdate](User)
 router = APIRouter()
 
 

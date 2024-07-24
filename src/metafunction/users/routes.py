@@ -5,12 +5,11 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 
 from metafunction.auth import get_admin_user
-from metafunction.crud import Repository
+from metafunction.repositories import users
 from metafunction.database import Session, get_session
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
 from metafunction.users.models import User, UserCreate, UserPublic, UserUpdate
 
-users = Repository[User, UserCreate, UserUpdate](User)
 router = APIRouter()
 
 
