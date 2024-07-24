@@ -1,4 +1,4 @@
-from metafunction.credentials import crud as credentials
+from metafunction.repositories import credentials
 from metafunction.credentials.models import (
     Credential,
     CredentialCreate,

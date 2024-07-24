@@ -1,34 +1,35 @@
 from metafunction.database import Session
-from metafunction.users import crud as users
+from metafunction.repositories import users
 from metafunction.users.models import User, UserCreate, UserUpdate
 
 
 def test_get_all(session: Session):
-    users_list = users.get_all(session)
+    users_list = users.get_all(session, None)
     assert len(users_list) == 0
 
 
 def test_get_all_with_users(session: Session, test_user: User):
-    users_list = users.get_all(session)
+    users_list = users.get_all(session, None)
     assert len(users_list) == 1
     assert users_list[0].id == test_user.id
 
 
 def test_get(session: Session, test_user: User):
     assert test_user.id is not None
-    user = users.get(session, test_user.id)
+    user = users.get(session, None, test_user.id)
     assert user is not None
     assert user.id == test_user.id
 
 
 def test_get_not_found(session: Session):
-    user = users.get(session, 1)
+    user = users.get(session, None, 1)
     assert user is None
 
 
 def test_create(session: Session):
     user = users.create(
         session,
+        None,
         UserCreate.model_validate(
             {
                 'email': 'test1@example.com',
@@ -43,6 +44,7 @@ def test_create(session: Session):
 def test_update(session: Session, test_user: User):
     user = users.update(
         session,
+        None,
         test_user,
         UserUpdate.model_validate(
             {
@@ -59,6 +61,7 @@ def test_update_by_id(session: Session, test_user: User):
     assert test_user.id is not None
     user = users.update_by_id(
         session,
+        None,
         test_user.id,
         UserUpdate.model_validate(
             {
@@ -75,6 +78,7 @@ def test_update_by_id(session: Session, test_user: User):
 def test_update_by_unknown_id(session: Session):
     user = users.update_by_id(
         session,
+        None,
         1,
         UserUpdate.model_validate(
             {
@@ -87,21 +91,21 @@ def test_update_by_unknown_id(session: Session):
 
 
 def test_delete(session: Session, test_user: User):
-    user = users.delete(session, test_user)
+    user = users.delete(session, None, test_user)
     assert test_user.id is not None
     assert user is not None
     assert user.id == test_user.id
-    assert users.get(session, test_user.id) is None
+    assert users.get(session, None, test_user.id) is None
 
 
 def test_delete_by_id(session: Session, test_user: User):
     assert test_user.id is not None
-    user = users.delete_by_id(session, test_user.id)
+    user = users.delete_by_id(session, None, test_user.id)
     assert user is not None
     assert user.id == test_user.id
-    assert users.get(session, test_user.id) is None
+    assert users.get(session, None, test_user.id) is None
 
 
 def test_delete_by_unknown_id(session: Session):
-    user = users.delete_by_id(session, 1)
+    user = users.delete_by_id(session, None, 1)
     assert user is None

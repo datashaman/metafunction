@@ -1,9 +1,9 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from metafunction.credentials import crud as credentials
 from metafunction.credentials.models import Credential
 from metafunction.database import Session
+from metafunction.repositories import credentials
 from metafunction.users.models import User
 
 

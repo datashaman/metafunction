@@ -1,6 +1,6 @@
 from metafunction.database import Session
-from metafunction.functions import crud as functions
 from metafunction.functions.models import Function, FunctionCreate, FunctionUpdate
+from metafunction.repositories import functions
 from metafunction.users.models import User
 
 

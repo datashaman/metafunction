@@ -2,7 +2,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from metafunction.database import Session
-from metafunction.users import crud as users
+from metafunction.repositories import users
 from metafunction.users.models import User
 
 
@@ -89,7 +89,7 @@ def test_create_user(client: TestClient, session: Session, admin_user: User) -> 
 
     assert 'password' not in body['data']['user']
 
-    db_user = users.get(session, user['id'])
+    db_user = users.get(session, None, user['id'])
     assert db_user is not None
     assert db_user.email == json['email']
     assert db_user.name == json['name']
@@ -166,7 +166,7 @@ def test_update_user(client: TestClient, session: Session, test_user: User, admi
     assert 'password' not in user
 
     assert test_user.id is not None
-    db_user = users.get(session, test_user.id)
+    db_user = users.get(session, None, test_user.id)
     assert db_user is not None
     assert db_user.email == json['email']
     assert db_user.name == json['name']
@@ -252,7 +252,7 @@ def test_delete_user(client: TestClient, session: Session, test_user: User, admi
 
     assert 'password' not in body['data']['user']
 
-    db_user = users.get(session, test_user.id)
+    db_user = users.get(session, None, test_user.id)
     assert db_user is None
 
 
