@@ -1,4 +1,3 @@
-from metafunction.repositories import credentials
 from metafunction.credentials.models import (
     Credential,
     CredentialCreate,
@@ -7,6 +6,7 @@ from metafunction.credentials.models import (
     CredentialUpdate,
 )
 from metafunction.database import Session
+from metafunction.repositories import credentials
 from metafunction.users.models import User
 
 

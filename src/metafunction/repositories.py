@@ -8,7 +8,6 @@ from metafunction.database import Session, select
 from metafunction.functions.models import Function, FunctionCreate, FunctionUpdate
 from metafunction.users.models import User, UserCreate, UserUpdate
 
-
 T = TypeVar('T', bound=SQLModel)
 TCreate = TypeVar('TCreate', bound=SQLModel)
 TUpdate = TypeVar('TUpdate', bound=SQLModel)
@@ -25,9 +24,7 @@ class Repository(Generic[T, TCreate, TUpdate]):
         offset: int = 0,
         limit: int = 10,
     ) -> List[T]:
-        return list(
-            session.exec(self.base_query(session, user).offset(offset).limit(limit)).all()
-        )
+        return list(session.exec(self.base_query(session, user).offset(offset).limit(limit)).all())
 
     def get(
         self,
@@ -35,9 +32,7 @@ class Repository(Generic[T, TCreate, TUpdate]):
         user: User,
         model_id: int,
     ) -> Optional[T]:
-        return session.exec(
-            self.base_query(session, user).where(self.model.id == model_id)
-        ).first()
+        return session.exec(self.base_query(session, user).where(self.model.id == model_id)).first()
 
     def get_by_name(
         self,
@@ -45,9 +40,7 @@ class Repository(Generic[T, TCreate, TUpdate]):
         user: User,
         name: str,
     ) -> Optional[T]:
-        return session.exec(
-            self.base_query(session, user).where(self.model.name == name)
-        ).first()
+        return session.exec(self.base_query(session, user).where(self.model.name == name)).first()
 
     def create(
         self,

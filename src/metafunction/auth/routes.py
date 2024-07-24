@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from metafunction.auth import get_current_user
-from metafunction.repositories import users
 from metafunction.database import Session, get_session
+from metafunction.repositories import users
 from metafunction.responses import FailResponse, SuccessResponse, fail_response, success_response
-from metafunction.users.models import User, UserCreate, UserPublic, UserUpdate
+from metafunction.users.models import User, UserPublic
 
 
 class Token(BaseModel):
@@ -32,9 +32,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session),
 ) -> Union[Token, JSONResponse]:
-    user = session.exec(
-        users.base_query(session).where(User.email == form_data.username)
-    ).first()
+    user = session.exec(users.base_query(session).where(User.email == form_data.username)).first()
     if not (user and user.password == form_data.password):
         return fail_response(username='Incorrect username or password')
     return Token(access_token=user.create_access_token())
