@@ -2,12 +2,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from metafunction import app
-from metafunction.credentials import crud as credentials
 from metafunction.credentials.models import Credential, CredentialCreate, CredentialType, CredentialTypeCreate
 from metafunction.database import Session, SQLModel, engine, get_session
-from metafunction.functions import crud as functions
 from metafunction.functions.models import Function, FunctionCreate
-from metafunction.users import crud as users
+from metafunction.repositories import credentials, functions, users
 from metafunction.users.models import User, UserCreate
 
 SQLModel.metadata.create_all(bind=engine)
@@ -38,6 +36,7 @@ def client(session: Session) -> TestClient:
 def admin_user(session: Session) -> User:
     return users.create(
         session,
+        None,
         UserCreate.model_validate(
             {
                 'name': 'Admin User',
@@ -53,6 +52,7 @@ def admin_user(session: Session) -> User:
 def test_user(session: Session) -> User:
     return users.create(
         session,
+        None,
         UserCreate.model_validate(
             {
                 'name': 'Test User',

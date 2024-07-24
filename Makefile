@@ -11,7 +11,7 @@ test:
 lint:
 	hatch run lint:style
 
-Fix:
+fix:
 	hatch run lint:fix
 
 cov:
